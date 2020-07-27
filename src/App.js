@@ -186,7 +186,7 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
     ice_pellets_heavy=0, flurries=0, freezing_rain_heavy=0,
     freezing_rain_light=0, fog_light=0) {
 
-    return [{
+    return JSON.stringify({
         'temperature': temperature,
         'dew_point': dew_point,
         'relative_humidity': relative_humidity,
@@ -219,5 +219,5 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
         'freezing_rain_heavy': freezing_rain_heavy,
         'freezing_rain_light': freezing_rain_light,
         'fog_light': fog_light
-    }]
+    })
 }
