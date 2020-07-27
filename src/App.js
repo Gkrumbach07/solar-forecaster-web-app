@@ -6,26 +6,7 @@ import CanvasJSReact from './canvasjs.react';
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-const webpack = require('webpack');
-const dotenv = require('dotenv');
-
-module.exports = () => {
-    // call dotenv and it will return an Object with a parsed key
-    const env = dotenv.config().parsed;
-
-    // reduce it to a nice object, the same as before
-    const envKeys = Object.keys(env).reduce((prev, next) => {
-        prev[`process.env.${next}`] = JSON.stringify(env[next]);
-        return prev;
-    }, {});
-
-    return {
-        plugins: [
-            new webpack.DefinePlugin(envKeys)
-        ]
-    };
-};
-
+require('dotenv').config();
 
 function Forecast(props) {
     const days = props.forecast.map(day => (
@@ -117,7 +98,7 @@ class App extends Component{
         });
 
         // get weather forecast
-        fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.API_KEY)
+        fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -157,7 +138,6 @@ class App extends Component{
                 <div className="chart">
                     <CanvasJSChart options={this.state.options} onRef={ref => this.chart = ref}/>
                 </div>
-                {process.env.API_KEY}
             </div>
         );
     }
