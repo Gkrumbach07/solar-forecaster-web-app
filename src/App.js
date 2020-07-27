@@ -97,6 +97,19 @@ class App extends Component{
             }
         });
 
+        const data_params = make_params(70, 78, 89,
+            0, 90, 3);
+
+        fetch("http://" + process.env.REACT_APP_HOST + ":8080/predict", {
+            body: "json_args=" + data_params,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            method: "POST"
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+
         // get weather forecast
         fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
             .then(res => res.json())
@@ -162,4 +175,49 @@ function temp_hum_to_dew(temp, humidity) {
     return (Math.pow((humidity/100), 0.125) * (112 + (0.9 * temp)))
         + (0.1 * temp)
         - 112;
+}
+
+function make_params(temperature, dew_point, relative_humidity, daily_precipitation,
+    station_pressure, wind_speed, hourly_visibility=10, cloud_cover=0,
+    mostly_cloudy=0, mostly_clear=0, clear=0, cloudy=0, partly_cloudy=0,
+    overcast=0, rain_light=0, tstorm=0, drizzle=0, rain_heavy=0, rain=0,
+    fog=0, snow_light=0, snow=0, snow_heavy=0, freezing_rain=0,
+    freezing_drizzle=0, ice_pellets=0, ice_pellets_light=0,
+    ice_pellets_heavy=0, flurries=0, freezing_rain_heavy=0,
+    freezing_rain_light=0, fog_light=0) {
+
+    return [{
+        'temperature': temperature,
+        'dew_point': dew_point,
+        'relative_humidity': relative_humidity,
+        'daily_precipitation': daily_precipitation,
+        'station_pressure': station_pressure,
+        'wind_speed': wind_speed,
+        'hourly_visibility': hourly_visibility,
+        'cloud_cover': cloud_cover,
+        'mostly_cloudy': mostly_cloudy,
+        'mostly_clear': mostly_clear,
+        'clear': clear,
+        'cloudy': cloudy,
+        'partly_cloudy': partly_cloudy,
+        'overcast': overcast,
+        'rain_light': rain_light,
+        'tstorm': tstorm,
+        'drizzle': drizzle,
+        'rain_heavy': rain_heavy,
+        'rain': rain,
+        'fog': fog,
+        'snow_light': snow_light,
+        'snow': snow,
+        'snow_heavy': snow_heavy,
+        'freezing_rain': freezing_rain,
+        'freezing_drizzle': freezing_drizzle,
+        'ice_pellets': ice_pellets,
+        'ice_pellets_light': ice_pellets_light,
+        'ice_pellets_heavy': ice_pellets_heavy,
+        'flurries': flurries,
+        'freezing_rain_heavy': freezing_rain_heavy,
+        'freezing_rain_light': freezing_rain_light,
+        'fog_light': fog_light
+    }]
 }
