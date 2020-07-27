@@ -101,9 +101,9 @@ class App extends Component{
             0, 90, 3);
 
         fetch("http://" + process.env.REACT_APP_HOST + ":8080/predict", {
-            body: "json_args=" + data_params,
+            body: "{json_args=" + data_params + "}",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "content-type": "application/x-www-form-urlencoded"
             },
             method: "POST"
         })
