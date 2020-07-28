@@ -106,6 +106,7 @@ class App extends Component{
                 (result) => {
                     // set forecast state
                     this.setState({'forecast': result});
+                    console.log(result)
 
                     // grab solar predictions based on forecast
                     const params = [];
@@ -117,7 +118,7 @@ class App extends Component{
                             day['precipitation_accumulation'].value,
                             this.getAvg("baro_pressure", day),
                             this.getAvg("wind_speed", day),
-                            this.getAvg("visability", day),
+                            this.getAvg("visibility", day),
                             day['weather_code'].value))
                     })
 
