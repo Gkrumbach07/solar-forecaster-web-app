@@ -129,8 +129,7 @@ class App extends Component{
                         headers: {
                             'content-type': 'application/x-www-form-urlencoded'
                         },
-                        method: "POST",
-                        mode: 'no-cors'
+                        method: "POST"
                     })
                         .then(out => out.json())
                         .then(prediction => {
