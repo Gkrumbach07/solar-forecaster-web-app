@@ -109,8 +109,14 @@ class App extends Component{
             },
             method: "POST"
         })
-            .then(data => console.log(data));
-//.then(response => response.json())
+            .then(response => response.json())
+            .then(data => console.log(data))
+
+            .catch(error => {
+            this.setState({ errorMessage: error.toString() });
+            console.error('There was an error!', error);
+        });
+
         // get weather forecast
         fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
             .then(res => res.json())
