@@ -132,7 +132,7 @@ class App extends Component{
                         method: "POST",
                         mode: 'no-cors'
                     })
-                        .then(out => JSON.parse(out.text()))
+                        .then(out => out.json())
                         .then(prediction => {
                             this.setState({'solar_prediction': prediction});
                         })
