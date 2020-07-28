@@ -101,15 +101,15 @@ class App extends Component{
             0, 90, 3);
 
         fetch(process.env.REACT_APP_ROUTE, {
-            body: 'json_args=' + data_params,
+            body: encodeURIComponent(JSON.stringify(data_params)),
             headers: {
                 'content-type': 'application/x-www-form-urlencoded'
             },
             method: "POST",
             mode: 'no-cors'
         })
+            .then(response => response.json())
             .then(data => console.log(data))
-
             .catch(error => {
             this.setState({ errorMessage: error.toString() });
             console.error('There was an error!', error);
@@ -191,7 +191,7 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
     ice_pellets_heavy=0, flurries=0, freezing_rain_heavy=0,
     freezing_rain_light=0, fog_light=0) {
 
-    return JSON.stringify({
+    return {'json_args': [{
         'temperature': temperature,
         'dew_point': dew_point,
         'relative_humidity': relative_humidity,
@@ -224,5 +224,5 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
         'freezing_rain_heavy': freezing_rain_heavy,
         'freezing_rain_light': freezing_rain_light,
         'fog_light': fog_light
-    })
+    }]}
 }
