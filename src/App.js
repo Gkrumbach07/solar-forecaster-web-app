@@ -129,10 +129,11 @@ class App extends Component{
                         headers: {
                             'content-type': 'application/x-www-form-urlencoded'
                         },
-                        method: "POST"
+                        method: "POST",
+                        mode: 'no-cors'
                     })
-                        .then(out => out.json())
                         .then(prediction => {
+                            console.log((prediction));
                             this.setState({'solar_prediction': prediction});
                         })
                         .catch(error => {
