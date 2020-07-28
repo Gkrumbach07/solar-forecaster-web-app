@@ -127,10 +127,10 @@ class App extends Component{
                     fetch(process.env.REACT_APP_ROUTE, {
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
-                            'content-type': 'application/x-www-form-urlencoded'
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'Access-Control-Allow-Origin': 'http://http://solar-forecaster-web-app-solarforecaster.10.19.47.48.nip.io/'
                         },
-                        method: "POST",
-                        mode: 'no-cors'
+                        method: "POST"
                     })
                         .then(prediction => {
                             console.log((prediction));
