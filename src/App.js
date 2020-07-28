@@ -128,7 +128,7 @@ class App extends Component{
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
                             'content-type': 'application/x-www-form-urlencoded',
-                            'Access-Control-Allow-Origin': 'http://http://solar-forecaster-web-app-solarforecaster.10.19.47.48.nip.io/'
+                            'Access-Control-Allow-Origin': 'http://solar-forecaster-web-app-solarforecaster.10.19.47.48.nip.io'
                         },
                         method: "POST"
                     })
