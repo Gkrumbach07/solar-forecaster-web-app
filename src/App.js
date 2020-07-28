@@ -90,6 +90,8 @@ class App extends Component{
 
     }
 
+    getAvg(key, obj) { return ((obj[key][0]['min'].value + obj[key][1]['max'].value) / 2) }
+
     handleClick = (e) => {
         this.setState({'marker': {
                 hasLocation: true,
@@ -97,36 +99,50 @@ class App extends Component{
             }
         });
 
-        const data_params = make_params(70, 78, 89,
-            0, 90, 3);
-
-        fetch(process.env.REACT_APP_ROUTE, {
-            body: `json_args=${encodeURIComponent(JSON.stringify(data_params))}`,
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            method: "POST",
-            mode: 'no-cors'
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => {
-            this.setState({ errorMessage: error.toString() });
-            console.error('There was an error!', error);
-        });
-
         // get weather forecast
         fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
             .then(res => res.json())
             .then(
                 (result) => {
+                    // set forecast state
                     this.setState({'forecast': result});
 
+                    // grab solar predictions based on forecast
+                    const params = [];
+                    result.forEach(day => {
+                        params.push(make_params(
+                            this.getAvg("temp", day),
+                            temp_hum_to_dew(f_to_c(this.getAvg("temp", day)), this.getAvg("humidity", day)),
+                            this.getAvg("humidity", day),
+                            day['precipitation_accumulation'].value,
+                            this.getAvg("baro_pressure", day),
+                            this.getAvg("wind_speed", day),
+                            this.getAvg("visability", day),
+                            day['weather_code'].value))
+                    })
+
+                    // make api call
+                    fetch(process.env.REACT_APP_ROUTE, {
+                        body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
+                        headers: {
+                            'content-type': 'application/x-www-form-urlencoded'
+                        },
+                        method: "POST",
+                        mode: 'no-cors'
+                    })
+                        .then(out => JSON.parse(out.text()))
+                        .then(prediction => {
+                            this.setState({'solar_prediction': prediction});
+                        })
+                        .catch(error => {
+                            console.error('There was an error!', error);
+                        });
+
                     //set data points
-                    const dataPoints = this.state.forecast.map((day, i) => (
+                    const dataPoints = this.state.solar_prediction.map((value, i) => (
                         {
                             x: i,
-                            y:  parseFloat(((day['temp'][0]['min'].value + day['temp'][1]['max'].value) / 2).toFixed(1))
+                            y:  parseFloat(value.toFixed(1))
                         }
                     ));
                     const stateCopy = this.state.options;
@@ -160,10 +176,6 @@ class App extends Component{
         );
     }
 }
-/*
-
-
- */
 
 export default App;
 
@@ -182,14 +194,17 @@ function temp_hum_to_dew(temp, humidity) {
         - 112;
 }
 
+function code_to_value(code, to_compare) {
+    if(code === to_compare) {
+        return 6;
+    }
+    else {
+        return 0;
+    }
+}
+
 function make_params(temperature, dew_point, relative_humidity, daily_precipitation,
-    station_pressure, wind_speed, hourly_visibility=10, cloud_cover=0,
-    mostly_cloudy=0, mostly_clear=0, clear=0, cloudy=0, partly_cloudy=0,
-    overcast=0, rain_light=0, tstorm=0, drizzle=0, rain_heavy=0, rain=0,
-    fog=0, snow_light=0, snow=0, snow_heavy=0, freezing_rain=0,
-    freezing_drizzle=0, ice_pellets=0, ice_pellets_light=0,
-    ice_pellets_heavy=0, flurries=0, freezing_rain_heavy=0,
-    freezing_rain_light=0, fog_light=0) {
+    station_pressure, wind_speed, hourly_visibility=10, weather_code=0) {
 
     return [{
         'temperature': temperature,
@@ -199,30 +214,30 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
         'station_pressure': station_pressure,
         'wind_speed': wind_speed,
         'hourly_visibility': hourly_visibility,
-        'cloud_cover': cloud_cover,
-        'mostly_cloudy': mostly_cloudy,
-        'mostly_clear': mostly_clear,
-        'clear': clear,
-        'cloudy': cloudy,
-        'partly_cloudy': partly_cloudy,
-        'overcast': overcast,
-        'rain_light': rain_light,
-        'tstorm': tstorm,
-        'drizzle': drizzle,
-        'rain_heavy': rain_heavy,
-        'rain': rain,
-        'fog': fog,
-        'snow_light': snow_light,
-        'snow': snow,
-        'snow_heavy': snow_heavy,
-        'freezing_rain': freezing_rain,
-        'freezing_drizzle': freezing_drizzle,
-        'ice_pellets': ice_pellets,
-        'ice_pellets_light': ice_pellets_light,
-        'ice_pellets_heavy': ice_pellets_heavy,
-        'flurries': flurries,
-        'freezing_rain_heavy': freezing_rain_heavy,
-        'freezing_rain_light': freezing_rain_light,
-        'fog_light': fog_light
+        'cloud_cover': 0,
+        'mostly_cloudy': code_to_value(weather_code, 'mostly_cloudy'),
+        'mostly_clear': code_to_value(weather_code, 'mostly_clear'),
+        'clear': code_to_value(weather_code, 'clear'),
+        'cloudy': code_to_value(weather_code, 'cloudy'),
+        'partly_cloudy': code_to_value(weather_code, 'partly_cloudy'),
+        'overcast': code_to_value(weather_code, 'overcast'),
+        'rain_light': code_to_value(weather_code, 'rain_light'),
+        'tstorm': code_to_value(weather_code, 'tstorm'),
+        'drizzle': code_to_value(weather_code, 'drizzle'),
+        'rain_heavy': code_to_value(weather_code, 'rain_heavy'),
+        'rain': code_to_value(weather_code, 'rain'),
+        'fog': code_to_value(weather_code, 'fog'),
+        'snow_light': code_to_value(weather_code, 'snow_light'),
+        'snow': code_to_value(weather_code, 'snow'),
+        'snow_heavy': code_to_value(weather_code, 'snow_heavy'),
+        'freezing_rain': code_to_value(weather_code, 'freezing_rain'),
+        'freezing_drizzle': code_to_value(weather_code, 'freezing_drizzle'),
+        'ice_pellets': code_to_value(weather_code, 'ice_pellets'),
+        'ice_pellets_light': code_to_value(weather_code, 'ice_pellets_light'),
+        'ice_pellets_heavy': code_to_value(weather_code, 'ice_pellets_heavy'),
+        'flurries': code_to_value(weather_code, 'flurries'),
+        'freezing_rain_heavy': code_to_value(weather_code, 'freezing_rain_heavy'),
+        'freezing_rain_light': code_to_value(weather_code, 'freezing_rain_light'),
+        'fog_light': code_to_value(weather_code, 'fog_light')
     }]
 }
