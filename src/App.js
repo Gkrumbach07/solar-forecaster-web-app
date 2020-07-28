@@ -108,7 +108,6 @@ class App extends Component{
             method: "POST",
             mode: 'no-cors'
         })
-            .then(response => response.json())
             .then(data => console.log(data))
 
             .catch(error => {
