@@ -101,15 +101,12 @@ class App extends Component{
             0, 90, 3);
 
         data_params = 'json_args=%5B%7B%22temperature%22%3A+70%2C+%22dew_point%22%3A+78%2C+%22relative_humidity%22%3A+89%2C+%22daily_precipitation%22%3A+0%2C+%22station_pressure%22%3A+90%2C+%22wind_speed%22%3A+3%2C+%22hourly_visibility%22%3A+10%2C+%22cloud_cover%22%3A+0%2C+%22mostly_cloudy%22%3A+0%2C+%22mostly_clear%22%3A+0%2C+%22clear%22%3A+0%2C+%22cloudy%22%3A+0%2C+%22partly_cloudy%22%3A+0%2C+%22overcast%22%3A+0%2C+%22rain_light%22%3A+0%2C+%22tstorm%22%3A+0%2C+%22drizzle%22%3A+0%2C+%22rain_heavy%22%3A+0%2C+%22rain%22%3A+0%2C+%22fog%22%3A+0%2C+%22snow_light%22%3A+0%2C+%22snow%22%3A+0%2C+%22snow_heavy%22%3A+0%2C+%22freezing_rain%22%3A+0%2C+%22freezing_drizzle%22%3A+0%2C+%22ice_pellets%22%3A+0%2C+%22ice_pellets_light%22%3A+0%2C+%22ice_pellets_heavy%22%3A+0%2C+%22flurries%22%3A+0%2C+%22freezing_rain_heavy%22%3A+0%2C+%22freezing_rain_light%22%3A+0%2C+%22fog_light%22%3A+0%7D%5D'
-
-        /*
-         body: data_params,
+        
+        fetch("http://" + process.env.REACT_APP_HOST + ":8080/predict", {
+            body: data_params,
             headers: {
                 'content-type': 'application/x-www-form-urlencoded'
             },
-         */
-        fetch("http://" + process.env.REACT_APP_HOST + ":8080/predict", {
-
             method: "POST"
         })
             .then(response => response.json())
