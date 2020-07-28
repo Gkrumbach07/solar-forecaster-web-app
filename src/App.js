@@ -64,6 +64,7 @@ class App extends Component{
                 }
             },
             'forecast': [],
+            'solar_prediction': [],
             'options': {
                 animationEnabled: true,
                 exportEnabled: true,
@@ -207,7 +208,7 @@ function code_to_value(code, to_compare) {
 function make_params(temperature, dew_point, relative_humidity, daily_precipitation,
     station_pressure, wind_speed, hourly_visibility=10, weather_code=0) {
 
-    return [{
+    return {
         'temperature': temperature,
         'dew_point': dew_point,
         'relative_humidity': relative_humidity,
@@ -240,5 +241,5 @@ function make_params(temperature, dew_point, relative_humidity, daily_precipitat
         'freezing_rain_heavy': code_to_value(weather_code, 'freezing_rain_heavy'),
         'freezing_rain_light': code_to_value(weather_code, 'freezing_rain_light'),
         'fog_light': code_to_value(weather_code, 'fog_light')
-    }]
+    }
 }
