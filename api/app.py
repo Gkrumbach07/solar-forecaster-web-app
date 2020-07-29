@@ -3,14 +3,17 @@ import requests
 from urllib.parse import urlencode
 import json
 
-app = Flask(__name__, static_folder='../build', static_url_path='/')
+app = Flask(__name__)
 
 DEFAULT_BASE_URL = "http://forecaster:8080/%s"
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return app.send_static_file('index.html')
+  return """
+  <h1>Python Flask in Docker!</h1>
+  <p>A sample web-app for running Flask inside Docker.</p>
+  """
 
 
 @app.route('/api/predict')
@@ -22,3 +25,7 @@ def score_text(text, url = None):
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     response = requests.request("POST", url, data=payload, headers=headers)
     return json.loads(response.text)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0')
