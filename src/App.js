@@ -107,7 +107,6 @@ class App extends Component{
                 (result) => {
                     // set forecast state
                     this.setState({'forecast': result});
-                    console.log(result)
 
                     // grab solar predictions based on forecast
                     const params = [];
@@ -124,11 +123,10 @@ class App extends Component{
                     })
 
                     // make api call
-                    fetch(process.env.REACT_APP_ROUTE, {
+                    fetch('/api/predict', {
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
-                            'content-type': 'application/x-www-form-urlencoded',
-                            'Access-Control-Allow-Origin': '*'
+                            'content-type': 'application/x-www-form-urlencoded'
                         },
                         method: "POST"
                     })
@@ -151,6 +149,8 @@ class App extends Component{
                     stateCopy['data'][0]['dataPoints'] = dataPoints;
                     this.setState({'options': stateCopy});
                     this.chart.render();
+
+
                 })
     }
 
