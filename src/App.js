@@ -75,7 +75,6 @@ class App extends Component{
                 axisY: {
                     title: "Temperature",
                     includeZero: true,
-                    suffix: "%"
                 },
                 axisX: {
                     title: "Date",
@@ -83,7 +82,7 @@ class App extends Component{
                 },
                 data: [{
                     type: "line",
-                    toolTipContent: "Day {x}: {y}°F",
+                    toolTipContent: "Day {x}: {y}",
                     dataPoints: []
                 }]
             }
