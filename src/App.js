@@ -130,6 +130,7 @@ class App extends Component{
                         },
                         method: "POST"
                     })
+                        .then(res => res.json())
                         .then(prediction => {
                             console.log((prediction));
                             this.setState({'solar_prediction': prediction});
