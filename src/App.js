@@ -126,8 +126,7 @@ class App extends Component{
                     fetch('http://solarforecaster-solarforecaster.10.19.47.48.nip.io/predict', {
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
-                            'content-type': 'application/x-www-form-urlencoded',
-                            "Access-Control-Allow-Origin": "*"
+                            'content-type': 'application/x-www-form-urlencoded'
                         },
                         method: "POST"
                     })
