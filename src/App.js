@@ -122,11 +122,12 @@ class App extends Component{
                             day['weather_code'].value))
                     })
 
-                    /* make api call
-                    fetch('/users', {
+                    // make api call
+                    fetch('http://solarforecaster-solarforecaster.10.19.47.48.nip.io/predict', {
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
-                            'content-type': 'application/x-www-form-urlencoded'
+                            'content-type': 'application/x-www-form-urlencoded',
+                            "Access-Control-Allow-Origin": "*"
                         },
                         method: "POST"
                     })
@@ -138,9 +139,7 @@ class App extends Component{
                             console.error('There was an error!', error);
                         });
 
-                     */
 
-                    fetch('/users').then(res => res.json()).then(users => console.log(users));
 
                     //set data points
                     const dataPoints = this.state.solar_prediction.map((value, i) => (
@@ -153,8 +152,6 @@ class App extends Component{
                     stateCopy['data'][0]['dataPoints'] = dataPoints;
                     this.setState({'options': stateCopy});
                     this.chart.render();
-
-
                 })
     }
 
