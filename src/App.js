@@ -74,8 +74,8 @@ class App extends Component{
                 },
                 axisY: {
                     title: "Temperature",
-                    includeZero: false,
-                    suffix: "°F"
+                    includeZero: true,
+                    suffix: "%"
                 },
                 axisX: {
                     title: "Date",
@@ -138,7 +138,7 @@ class App extends Component{
                             const dataPoints = this.state.solar_prediction.map((value, i) => (
                                 {
                                     x: i,
-                                    y:  parseFloat(value.toFixed(1))
+                                    y:  parseFloat(value.toFixed(4))
                                 }
                             ));
                             const stateCopy = this.state.options;
