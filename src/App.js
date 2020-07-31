@@ -132,27 +132,24 @@ class App extends Component{
                     })
                         .then(res => res.json())
                         .then(prediction => {
-                            console.log((prediction));
                             this.setState({'solar_prediction': prediction});
+
+                            //set data points
+                            const dataPoints = this.state.solar_prediction.map((value, i) => (
+                                {
+                                    x: i,
+                                    y:  parseFloat(value.toFixed(1))
+                                }
+                            ));
+                            const stateCopy = this.state.options;
+                            stateCopy['data'][0]['dataPoints'] = dataPoints;
+                            this.setState({'options': stateCopy});
+                            this.chart.render();
+                        })
                         })
                         .catch(error => {
                             console.error('There was an error!', error);
                         });
-
-
-
-                    //set data points
-                    const dataPoints = this.state.solar_prediction.map((value, i) => (
-                        {
-                            x: i,
-                            y:  parseFloat(value.toFixed(1))
-                        }
-                    ));
-                    const stateCopy = this.state.options;
-                    stateCopy['data'][0]['dataPoints'] = dataPoints;
-                    this.setState({'options': stateCopy});
-                    this.chart.render();
-                })
     }
 
 
