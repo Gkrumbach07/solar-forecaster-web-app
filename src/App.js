@@ -122,7 +122,7 @@ class App extends Component{
                     })
 
                     // make api call
-                    fetch('http://solarforecaster-solarforecaster.10.19.47.48.nip.io/predict', {
+                    fetch(process.env.REACT_APP_MODEL_URL + '/predict', {
                         body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                         headers: {
                             'content-type': 'application/x-www-form-urlencoded'
