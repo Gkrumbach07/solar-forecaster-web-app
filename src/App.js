@@ -99,10 +99,10 @@ class App extends Component{
             }
         });
 
-        const params = {
+        const params = [{
             "lat": e.latlng.lat,
             "long": e.latlng.lng
-        }
+        }]
 
         fetch(process.env.REACT_APP_MODEL_URL + '/predict', {
             body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
