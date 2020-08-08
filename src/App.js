@@ -99,7 +99,41 @@ class App extends Component{
             }
         });
 
-        // get weather forecast
+        const params = {
+            "lat": e.latlng.lat,
+            "long": e.latlng.lng
+        }
+
+        fetch(process.env.REACT_APP_MODEL_URL + '/predict', {
+            body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            method: "POST"
+        })
+            .then(res => res.json())
+            .then(result => {
+
+                console.log(result);
+                // set forecast state
+                this.setState({'forecast': result['weather']});
+
+                this.setState({'solar_prediction': result['solar']});
+
+                //set data points
+                const dataPoints = this.state.solar_prediction.map((value, i) => (
+                    {
+                        x: i,
+                        y:  parseFloat(value.toFixed(4))
+                    }
+                ));
+                const stateCopy = this.state.options;
+                stateCopy['data'][0]['dataPoints'] = dataPoints;
+                this.setState({'options': stateCopy});
+                this.chart.render();
+            })
+
+        /* get weather forecast
         fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
             .then(res => res.json())
             .then(
@@ -149,6 +183,8 @@ class App extends Component{
                         .catch(error => {
                             console.error('There was an error!', error);
                         });
+
+         */
     }
 
 
