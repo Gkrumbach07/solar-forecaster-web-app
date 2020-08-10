@@ -141,7 +141,7 @@ class App extends Component{
             })
     }
 
-    handleSave = () => {
+    handleSave = (e) => {
         if(this.state.marker.hasLocation) {
             const params = {
                 "lat": this.state.marker.latlng.lat,
@@ -181,7 +181,7 @@ class App extends Component{
                         </div>
                 </div>
                 <div>
-                    <button onClick={this.handleSave()}>Track Location</button>
+                    <button onClick={e => this.handleSave(e)}>Track Location</button>
                 </div>
                 <div className="chart">
                     <CanvasJSChart options={this.state.options} onRef={ref => this.chart = ref}/>
