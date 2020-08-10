@@ -143,10 +143,10 @@ class App extends Component{
 
     handleSave = () => {
         if(this.state.marker.hasLocation) {
-            const params = [{
+            const params = {
                 "lat": this.state.marker.latlng.lat,
                 "long": this.state.marker.latlng.lng
-            }]
+            }
 
             fetch(process.env.REACT_APP_MODEL_URL + '/addlocation', {
                 body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
