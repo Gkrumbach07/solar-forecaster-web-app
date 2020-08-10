@@ -169,7 +169,7 @@ class App extends Component{
                 <div className="top-container">
                         <div className="map">
                             <MapContainer
-                                onClick={this.handleClick()}
+                                onClick={e => this.handleClick(e)}
                                 marker={this.state.marker}
                                 track={this.state.track}
                             />
@@ -181,7 +181,7 @@ class App extends Component{
                         </div>
                 </div>
                 <div>
-                    <button onClick={e => this.handleSave(e)}>Track Location</button>
+                    <button onClick={this.handleSave()}>Track Location</button>
                 </div>
                 <div className="chart">
                     <CanvasJSChart options={this.state.options} onRef={ref => this.chart = ref}/>
