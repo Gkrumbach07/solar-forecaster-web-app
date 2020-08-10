@@ -48,6 +48,16 @@ function MapContainer (props) {
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
             {marker}
+
+            {props.track.map(loc => (
+                <Marker
+                    key={loc.id}
+                    position={[
+                        loc.lat,
+                        loc.long
+                    ]}
+                />
+            ))}
         </Map>
     );
 }
@@ -63,6 +73,7 @@ class App extends Component{
                     'lng': -108,
                 }
             },
+            'track': [],
             'forecast': [],
             'solar_prediction': [],
             'options': {
@@ -70,10 +81,10 @@ class App extends Component{
                 exportEnabled: true,
                 theme: "light2", // "light1", "dark1", "dark2"
                 title:{
-                    text: "Daily Temperature"
+                    text: "Solar Efficiency"
                 },
                 axisY: {
-                    title: "Temperature",
+                    title: "Efficiency",
                     includeZero: true,
                 },
                 axisX: {
@@ -89,8 +100,6 @@ class App extends Component{
         };
 
     }
-
-    getAvg(key, obj) { return ((obj[key][0]['min'].value + obj[key][1]['max'].value) / 2) }
 
     handleClick = (e) => {
         this.setState({'marker': {
@@ -113,8 +122,6 @@ class App extends Component{
         })
             .then(res => res.json())
             .then(result => {
-
-                console.log(result);
                 // set forecast state
                 this.setState({'forecast': result['weather']});
 
@@ -132,59 +139,27 @@ class App extends Component{
                 this.setState({'options': stateCopy});
                 this.chart.render();
             })
+    }
 
-        /* get weather forecast
-        fetch("https://api.climacell.co/v3/weather/forecast/daily?lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&unit_system=us&start_time=now&fields=precipitation%2Cprecipitation_accumulation%2Ctemp%2Cwind_speed%2Cbaro_pressure%2Cvisibility%2Chumidity%2Cweather_code&apikey=" + process.env.REACT_APP_API_KEY)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    // set forecast state
-                    this.setState({'forecast': result});
+    handleSave = () => {
+        if(this.state.marker.hasLocation) {
+            const params = [{
+                "lat": this.state.marker.latlng.lat,
+                "long": this.state.marker.latlng.lng
+            }]
 
-                    // grab solar predictions based on forecast
-                    const params = [];
-                    result.forEach(day => {
-                        params.push(make_params(
-                            this.getAvg("temp", day),
-                            temp_hum_to_dew(f_to_c(this.getAvg("temp", day)), this.getAvg("humidity", day)),
-                            this.getAvg("humidity", day),
-                            day['precipitation_accumulation'].value,
-                            this.getAvg("baro_pressure", day),
-                            this.getAvg("wind_speed", day),
-                            this.getAvg("visibility", day),
-                            day['weather_code'].value))
-                    })
-
-                    // make api call
-                    fetch(process.env.REACT_APP_MODEL_URL + '/predict', {
-                        body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
-                        headers: {
-                            'content-type': 'application/x-www-form-urlencoded'
-                        },
-                        method: "POST"
-                    })
-                        .then(res => res.json())
-                        .then(prediction => {
-                            this.setState({'solar_prediction': prediction});
-
-                            //set data points
-                            const dataPoints = this.state.solar_prediction.map((value, i) => (
-                                {
-                                    x: i,
-                                    y:  parseFloat(value.toFixed(4))
-                                }
-                            ));
-                            const stateCopy = this.state.options;
-                            stateCopy['data'][0]['dataPoints'] = dataPoints;
-                            this.setState({'options': stateCopy});
-                            this.chart.render();
-                        })
-                        })
-                        .catch(error => {
-                            console.error('There was an error!', error);
-                        });
-
-         */
+            fetch(process.env.REACT_APP_MODEL_URL + '/addlocation', {
+                body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                },
+                method: "POST"
+            })
+                .then(res => res.json())
+                .then(result => {
+                    this.setState({'track': result["locations"]})
+                })
+        }
     }
 
 
@@ -194,8 +169,9 @@ class App extends Component{
                 <div className="top-container">
                         <div className="map">
                             <MapContainer
-                                onClick={e => this.handleClick(e)}
+                                onClick={this.handleClick()}
                                 marker={this.state.marker}
+                                track={this.state.track}
                             />
                         </div>
                         <div className="forecast">
@@ -203,6 +179,9 @@ class App extends Component{
                                 forecast={this.state.forecast}
                             />
                         </div>
+                </div>
+                <div>
+                    <button onClick={e => this.handleSave(e)}>Track Location</button>
                 </div>
                 <div className="chart">
                     <CanvasJSChart options={this.state.options} onRef={ref => this.chart = ref}/>
@@ -213,66 +192,3 @@ class App extends Component{
 }
 
 export default App;
-
-function f_to_c(t) {
-    return (t - 32) * (5/9);
-}
-
-function c_to_f(t) {
-    return (t * (9/5)) + 32;
-}
-
-// uses C degrees and percent
-function temp_hum_to_dew(temp, humidity) {
-    return (Math.pow((humidity/100), 0.125) * (112 + (0.9 * temp)))
-        + (0.1 * temp)
-        - 112;
-}
-
-function code_to_value(code, to_compare) {
-    if(code === to_compare) {
-        return 6;
-    }
-    else {
-        return 0;
-    }
-}
-
-function make_params(temperature, dew_point, relative_humidity, daily_precipitation,
-    station_pressure, wind_speed, hourly_visibility=10, weather_code=0) {
-
-    return {
-        'temperature': temperature,
-        'dew_point': dew_point,
-        'relative_humidity': relative_humidity,
-        'daily_precipitation': daily_precipitation,
-        'station_pressure': station_pressure,
-        'wind_speed': wind_speed,
-        'hourly_visibility': hourly_visibility,
-        'cloud_cover': 0,
-        'mostly_cloudy': code_to_value(weather_code, 'mostly_cloudy'),
-        'mostly_clear': code_to_value(weather_code, 'mostly_clear'),
-        'clear': code_to_value(weather_code, 'clear'),
-        'cloudy': code_to_value(weather_code, 'cloudy'),
-        'partly_cloudy': code_to_value(weather_code, 'partly_cloudy'),
-        'overcast': code_to_value(weather_code, 'overcast'),
-        'rain_light': code_to_value(weather_code, 'rain_light'),
-        'tstorm': code_to_value(weather_code, 'tstorm'),
-        'drizzle': code_to_value(weather_code, 'drizzle'),
-        'rain_heavy': code_to_value(weather_code, 'rain_heavy'),
-        'rain': code_to_value(weather_code, 'rain'),
-        'fog': code_to_value(weather_code, 'fog'),
-        'snow_light': code_to_value(weather_code, 'snow_light'),
-        'snow': code_to_value(weather_code, 'snow'),
-        'snow_heavy': code_to_value(weather_code, 'snow_heavy'),
-        'freezing_rain': code_to_value(weather_code, 'freezing_rain'),
-        'freezing_drizzle': code_to_value(weather_code, 'freezing_drizzle'),
-        'ice_pellets': code_to_value(weather_code, 'ice_pellets'),
-        'ice_pellets_light': code_to_value(weather_code, 'ice_pellets_light'),
-        'ice_pellets_heavy': code_to_value(weather_code, 'ice_pellets_heavy'),
-        'flurries': code_to_value(weather_code, 'flurries'),
-        'freezing_rain_heavy': code_to_value(weather_code, 'freezing_rain_heavy'),
-        'freezing_rain_light': code_to_value(weather_code, 'freezing_rain_light'),
-        'fog_light': code_to_value(weather_code, 'fog_light')
-    }
-}
