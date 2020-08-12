@@ -119,7 +119,7 @@ class App extends Component{
             "long": e.latlng.lng
         }]
 
-        fetch(process.env.REACT_APP_MODEL_URL + '/predict', {
+        fetch(process.env.REACT_APP_BACKEND_URL + '/predict', {
             body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
             headers: {
                 'content-type': 'application/x-www-form-urlencoded'
