@@ -99,7 +99,7 @@ class App extends Component{
             }
         };
 
-        fetch(process.env.REACT_APP_MODEL_URL + '/addlocation', {})
+        fetch(process.env.REACT_APP_MODEL_URL + '/tracked', {})
             .then(res => res.json())
             .then(result => {
                 this.setState({'track': result["locations"]})
