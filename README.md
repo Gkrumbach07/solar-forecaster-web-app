@@ -24,6 +24,11 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Deploy on OpenShift
 To deploy this web app on OpenShift, we can you a wource to image technique to easily build the service. Open a CLI terminal and tun this command with the [backend](https://github.com/Gkrumbach07/openshift-flask-api) url as the env variable.
-`oc new-app nodeshift/ubi8-s2i-web-app:latest~https://github.com/Gkrumbach07/solar-forecaster-web-app.git -e REACT_APP_BACKEND_URL=temp`
+
+```
+oc new-app nodeshift/ubi8-s2i-web-app:latest~https://github.com/Gkrumbach07/solar-forecaster-web-app.git \
+      -e REACT_APP_BACKEND_URL=temp
+```
+
 Then expose the app using `oc expose`.
 
