@@ -99,12 +99,13 @@ class App extends Component{
             }
         };
 
+    }
+    componentDidMount() {
         fetch(process.env.REACT_APP_MODEL_URL + '/tracked', {})
             .then(res => res.json())
             .then(result => {
                 this.setState({'track': result["locations"]})
             })
-
     }
 
     handleClick = (e) => {
