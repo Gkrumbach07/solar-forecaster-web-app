@@ -101,7 +101,7 @@ class App extends Component{
 
     }
     componentDidMount() {
-        fetch(process.env.REACT_APP_MODEL_URL + '/tracked', {})
+        fetch(process.env.REACT_APP_BACKEND_URL + '/tracked', {})
             .then(res => res.json())
             .then(result => {
                 this.setState({'track': result["locations"]})
@@ -155,7 +155,7 @@ class App extends Component{
                 "long": this.state.marker.latlng.lng
             }
 
-            fetch(process.env.REACT_APP_MODEL_URL + '/addlocation', {
+            fetch(process.env.REACT_APP_BACKEND_URL + '/addlocation', {
                 body: `json_args=${encodeURIComponent(JSON.stringify(params))}`,
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded'
