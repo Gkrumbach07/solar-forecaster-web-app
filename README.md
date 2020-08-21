@@ -1,34 +1,16 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Solar Forecasting Web Application
+This React web app is meant to be used in conjuction with a backend service located [here](https://github.com/Gkrumbach07/openshift-flask-api)
 
 ## Deploy on OpenShift
-To deploy this web app on OpenShift, we can you a wource to image technique to easily build the service. Open a CLI terminal and tun this command with the [backend](https://github.com/Gkrumbach07/openshift-flask-api) url as the env variable.
+First we need to find the backend url after we have successfully deployed the backend. To do this we can set a variable using the command bellow.
+```
+BACKEND_URL=http://$(oc get route/backend -o jsonpath='{.spec.host}')
+```
 
+To deploy the front end on OpenShift, we can use the source to image technique to easily build the service. Open a CLI terminal and run this command with the [backend](https://github.com/Gkrumbach07/openshift-flask-api) url as the env variable. If you set the `BACKEND_URL` variable in the previous step, then you can subsitute `$BACKEND_URL` for the literal url.
 ```
 oc new-app nodeshift/ubi8-s2i-web-app:latest~https://github.com/Gkrumbach07/solar-forecaster-web-app.git \
-      -e REACT_APP_BACKEND_URL=temp
+	--build-env REACT_APP_BACKEND_URL=$BACKEND_URL \
+	--name=client
+oc expose svc/client
 ```
-
-Then expose the app using `oc expose`.
-
